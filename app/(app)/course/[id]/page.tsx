@@ -2,10 +2,11 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
-import { Loader2, Folder, FileText, Video, LinkIcon, FileArchive, ArrowLeft } from "lucide-react";
+import { Folder, FileText, Video, LinkIcon, FileArchive, ArrowLeft, RefreshCw } from "lucide-react";
 import { useAuth, apiFetch, openAuthedInNewTab } from "@/src/auth-client";
 import { useMounted } from "@/src/use-mounted";
 import { PageHeader } from "@/components/shared/page-header";
+import { LoadingScreen } from "@/components/shared/loading-screen";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -79,7 +80,8 @@ export default function CourseDetailPage() {
   const user = useAuth((s) => s.user);
   const id = params?.id;
   const [data, setData] = React.useState<CourseData | null>(null);
-  const [error, setError] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [attempt, setAttempt] = React.useState(0);
 
   React.useEffect(() => {
     if (!mounted) return;
@@ -91,37 +93,41 @@ export default function CourseDetailPage() {
 
   React.useEffect(() => {
     if (!mounted || !user || !id) return;
+    let cancelled = false;
     apiFetch<CourseData>(`/api/course/${id}`)
-      .then(setData)
-      .catch(() => setError(true));
-  }, [mounted, user, id]);
+      .then((d) => {
+        if (cancelled) return;
+        setData(d);
+        setError(null);
+      })
+      .catch((err: Error) => {
+        if (!cancelled) setError(err.message);
+      });
+    return () => { cancelled = true; };
+  }, [mounted, user, id, attempt]);
 
-  if (!mounted || !user) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
+  if (!mounted || !user) return <LoadingScreen />;
 
   if (error) {
+    // The back link is a genuine escape hatch, so it stays. Retry is what
+    // separates a real 404 from a transient network or server failure, which
+    // this single message cannot distinguish.
     return (
       <div className="mx-auto max-w-4xl">
-        <Link href="/search" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="h-4 w-4" /> Back to search
-        </Link>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <Link href="/search" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="h-4 w-4" /> Back to search
+          </Link>
+          <Button variant="outline" size="sm" onClick={() => setAttempt((a) => a + 1)}>
+            <RefreshCw className="h-4 w-4" /> Retry
+          </Button>
+        </div>
         <EmptyState title="Course not found" description="The course you are looking for does not exist or is unavailable." />
       </div>
     );
   }
 
-  if (!data) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
+  if (!data) return <LoadingScreen />;
 
   const course = data;
   const isEnrolled = course.isEnrolled;

@@ -2,10 +2,11 @@
 
 import * as React from "react";
 import { useRouter, useParams } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import { useAuth, apiFetch } from "@/src/auth-client";
 import { useMounted } from "@/src/use-mounted";
 import { PageHeader } from "@/components/shared/page-header";
+import { ErrorState } from "@/components/shared/error-state";
+import { LoadingScreen } from "@/components/shared/loading-screen";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { CourseModulesManager } from "@/components/instructor/course-modules";
@@ -48,7 +49,7 @@ export default function InstructorCourseDetailPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
   const [data, setData] = React.useState<CourseDetailData | null>(null);
-  const [error, setError] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
   const [refreshKey, setRefreshKey] = React.useState(0);
 
   React.useEffect(() => {
@@ -61,35 +62,40 @@ export default function InstructorCourseDetailPage() {
 
   React.useEffect(() => {
     if (!mounted || !user || !id) return;
+    let cancelled = false;
     apiFetch<CourseDetailData>(`/api/instructor/courses/${id}`)
-      .then(setData)
-      .catch(() => setError(true));
+      .then((d) => {
+        if (cancelled) return;
+        setData(d);
+        setError(null);
+      })
+      .catch((err: Error) => {
+        if (!cancelled) setError(err.message);
+      });
+    return () => { cancelled = true; };
   }, [mounted, user, id, refreshKey]);
 
+  // Already the page's refresh mechanism, so retry reuses it rather than
+  // adding a second counter.
   const handleChildRefresh = React.useCallback(() => {
     setRefreshKey((k) => k + 1);
   }, []);
 
-  if (!mounted || !user) {
-    return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
+  if (!mounted || !user) return <LoadingScreen variant="section" />;
   if (!data) {
     if (error) {
+      // Previously read "Course not found.", which is wrong for a network or
+      // server failure. Retry is what distinguishes a genuine 404 from a
+      // transient error.
       return (
-        <div className="flex min-h-[50vh] items-center justify-center">
-          <p className="text-sm text-muted-foreground">Course not found.</p>
-        </div>
+        <ErrorState
+          title="Could not load this course"
+          description={error}
+          onRetry={handleChildRefresh}
+        />
       );
     }
-    return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return <LoadingScreen variant="section" />;
   }
 
   return (

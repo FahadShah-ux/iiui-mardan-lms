@@ -7,6 +7,8 @@ import { Loader2, Plus } from "lucide-react";
 import { useAuth, apiFetch } from "@/src/auth-client";
 import { useMounted } from "@/src/use-mounted";
 import { PageHeader } from "@/components/shared/page-header";
+import { ErrorState } from "@/components/shared/error-state";
+import { LoadingScreen } from "@/components/shared/loading-screen";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -46,7 +48,8 @@ export default function InstructorCoursesPage() {
   const user = useAuth((s) => s.user);
   const [courses, setCourses] = React.useState<Course[] | null>(null);
   const [grades, setGrades] = React.useState<Grade[]>([]);
-  const [error, setError] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [attempt, setAttempt] = React.useState(0);
 
   const [open, setOpen] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
@@ -68,13 +71,19 @@ export default function InstructorCoursesPage() {
 
   React.useEffect(() => {
     if (!mounted || !user) return;
+    let cancelled = false;
     apiFetch<CoursesResponse>("/api/instructor/courses")
       .then((data) => {
+        if (cancelled) return;
         setCourses(data.courses);
         setGrades(data.grades);
+        setError(null);
       })
-      .catch(() => setError(true));
-  }, [mounted, user]);
+      .catch((err: Error) => {
+        if (!cancelled) setError(err.message);
+      });
+    return () => { cancelled = true; };
+  }, [mounted, user, attempt]);
 
   function resetForm() {
     setCode("");
@@ -105,27 +114,16 @@ export default function InstructorCoursesPage() {
     }
   }
 
-  if (!mounted || !user) {
+  if (!mounted || !user) return <LoadingScreen variant="section" />;
+  if (error && !courses)
     return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
+      <ErrorState
+        title="Could not load your courses"
+        description={error}
+        onRetry={() => setAttempt((a) => a + 1)}
+      />
     );
-  }
-  if (error && !courses) {
-    return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <p className="text-sm text-destructive">Failed to load courses. Please try again.</p>
-      </div>
-    );
-  }
-  if (!courses) {
-    return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
+  if (!courses) return <LoadingScreen variant="section" />;
 
   return (
     <div>
