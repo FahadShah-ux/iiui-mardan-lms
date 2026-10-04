@@ -1,10 +1,11 @@
 "use client";
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import { useAuth, apiFetch } from "@/src/auth-client";
 import { useMounted } from "@/src/use-mounted";
 import { PageHeader } from "@/components/shared/page-header";
+import { ErrorState } from "@/components/shared/error-state";
+import { LoadingScreen } from "@/components/shared/loading-screen";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -35,7 +36,8 @@ export default function ProfilePage() {
   const mounted = useMounted();
   const user = useAuth((s) => s.user);
   const [data, setData] = React.useState<ProfileData | null>(null);
-  const [error, setError] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [attempt, setAttempt] = React.useState(0);
 
   React.useEffect(() => {
     if (!mounted) return;
@@ -47,37 +49,42 @@ export default function ProfilePage() {
 
   React.useEffect(() => {
     if (!mounted || !user) return;
+    let cancelled = false;
     apiFetch<ProfileData>("/api/profile")
-      .then(setData)
-      .catch(() => setError(true));
-  }, [mounted, user]);
+      .then((d) => {
+        if (cancelled) return;
+        setData(d);
+        setError(null);
+      })
+      .catch((err: Error) => {
+        if (!cancelled) setError(err.message);
+      });
+    return () => { cancelled = true; };
+  }, [mounted, user, attempt]);
 
-  if (!mounted || !user) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
+  if (!mounted || !user) return <LoadingScreen />;
 
-  if (!data) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
-  if (error) {
+  // Checked before `!data`: the old order made this branch unreachable, so the
+  // page spun forever instead of reporting the failure.
+  if (error && !data) {
     return (
       <div className="mx-auto max-w-3xl">
         <PageHeader title="My Profile" description="View your account information." />
         <Card>
-          <CardContent className="p-6">Could not load your profile.</CardContent>
+          <CardContent className="p-6">
+            <ErrorState
+              className="py-4"
+              title="Could not load your profile"
+              description={error}
+              onRetry={() => setAttempt((a) => a + 1)}
+            />
+          </CardContent>
         </Card>
       </div>
     );
   }
+
+  if (!data) return <LoadingScreen />;
 
   const profile = data.user;
   const stats = data.stats;
