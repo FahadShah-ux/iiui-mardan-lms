@@ -9,6 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { GoogleButton } from "@/components/auth/google-button";
+
+const GOOGLE_ENABLED = Boolean(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID?.trim());
 
 export function LoginForm() {
   const router = useRouter();
@@ -85,6 +88,17 @@ export function LoginForm() {
             Sign in
           </Button>
         </form>
+
+        {GOOGLE_ENABLED && (
+          <>
+            <div className="my-4 flex items-center gap-3">
+              <span className="h-px flex-1 bg-border" />
+              <span className="text-xs uppercase tracking-wide text-muted-foreground">or</span>
+              <span className="h-px flex-1 bg-border" />
+            </div>
+            <GoogleButton onError={setError} />
+          </>
+        )}
 
         <div className="mt-6 rounded-lg border bg-muted/40 p-4 text-xs text-muted-foreground">
           <p className="mb-2 font-semibold text-foreground">Demo accounts (password: password123)</p>
