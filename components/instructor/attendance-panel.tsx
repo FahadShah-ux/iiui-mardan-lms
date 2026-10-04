@@ -12,6 +12,7 @@ import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
 } from "@/components/ui/select";
 import { EmptyState } from "@/components/shared/empty-state";
+import { ErrorState } from "@/components/shared/error-state";
 import { cn } from "@/src/lib/utils";
 import { apiFetch } from "@/src/auth-client";
 
@@ -30,23 +31,47 @@ export function AttendancePanel({ courses }: Props) {
   const [statuses, setStatuses] = React.useState<Record<string, Status>>({});
   const [busy, setBusy] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  // Identifies which course+date `statuses` actually describes.
+  //
+  // Storing the key rather than a boolean is what keeps a failed or superseded
+  // load from being mistaken for good data: after switching date, the old key no
+  // longer matches, so the roster is neither rendered as loaded nor writable.
+  // It also avoids clearing state inside the effect body, which the
+  // `react-hooks/set-state-in-effect` rule rejects.
+  const selection = `${courseId}|${date}`;
+  const [loadedSelection, setLoadedSelection] = React.useState<string | null>(null);
+  const loaded = loadedSelection === selection;
+
+  // Guards against an older, slower request overwriting a newer one.
+  const requestId = React.useRef(0);
 
   const course = courses.find((c) => c.id === courseId);
 
   const loadAttendance = React.useCallback(async () => {
     if (!course) return;
+    const mine = ++requestId.current;
     setLoading(true);
     try {
       const data = await apiFetch<{ records: { studentId: string; status: Status }[] }>(
         `/api/courses/${courseId}/attendance?date=${date}`
       );
+      if (mine !== requestId.current) return;
       const map: Record<string, Status> = {};
       for (const r of data.records ?? []) {
         map[r.studentId] = r.status;
       }
       setStatuses(map);
+      setError(null);
+      setLoadedSelection(`${courseId}|${date}`);
+    } catch (err) {
+      if (mine !== requestId.current) return;
+      // `loadedSelection` is deliberately left alone: it still points at the
+      // previous selection, so `loaded` is false and Save stays disabled.
+      setError(err instanceof Error ? err.message : "Could not load attendance.");
     } finally {
-      setLoading(false);
+      if (mine === requestId.current) setLoading(false);
     }
   }, [course, courseId, date]);
 
@@ -58,7 +83,10 @@ export function AttendancePanel({ courses }: Props) {
   }, [loadAttendance]);
 
   async function save() {
-    if (!course) return;
+    // Never write unless the roster on screen came from a successful load for
+    // this exact course and date. Without this, a failed load left `statuses`
+    // empty and every student was written as ABSENT.
+    if (!course || !loaded) return;
     setBusy(true);
     try {
       const entries = course.students.map((s) => ({ studentId: s.id, status: statuses[s.id] ?? "ABSENT" }));
@@ -74,6 +102,7 @@ export function AttendancePanel({ courses }: Props) {
   }
 
   const unmarked = (course?.students ?? []).filter((s) => !statuses[s.id]).length;
+  const canSave = Boolean(course) && loaded && !busy && !loading;
 
   return (
     <div className="space-y-4">
@@ -95,7 +124,7 @@ export function AttendancePanel({ courses }: Props) {
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
           </div>
           <div className="flex items-end">
-            <Button onClick={save} disabled={busy || !course} className="w-full">
+            <Button onClick={save} disabled={!canSave} className="w-full">
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Save Attendance
             </Button>
           </div>
@@ -104,7 +133,29 @@ export function AttendancePanel({ courses }: Props) {
 
       {!course && <EmptyState title="No courses" description="No courses assigned." />}
 
-      {course && (
+      {course && !loaded && loading && (
+        <Card>
+          <CardContent className="flex items-center justify-center gap-3 py-10 text-sm text-muted-foreground">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            Loading attendance for {date}…
+          </CardContent>
+        </Card>
+      )}
+
+      {course && !loaded && !loading && (
+        <Card>
+          <CardContent className="p-0">
+            <ErrorState
+              className="py-8"
+              title="Could not load attendance"
+              description={error ?? "The attendance records for this course and date could not be loaded, so they cannot be edited or saved."}
+              onRetry={loadAttendance}
+            />
+          </CardContent>
+        </Card>
+      )}
+
+      {course && loaded && (
         <Card>
           <CardContent className="p-0">
             <div className="flex items-center justify-between border-b p-4">
