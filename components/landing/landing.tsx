@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   BookOpen,
@@ -24,6 +25,7 @@ import { LandingHeader } from "@/components/landing/landing-header";
 import { MediaPlaceholder, PortraitPlaceholder } from "@/components/landing/media-placeholder";
 import { SectionHeading, SectionTag } from "@/components/landing/section-heading";
 import { AdmissionEnquiryForm } from "@/components/landing/admission-enquiry-form";
+import { CampusMedia } from "@/components/landing/media-gallery";
 import { useMounted } from "@/src/use-mounted";
 import { ROLE_HOME, useAuth } from "@/src/auth-client";
 
@@ -31,9 +33,12 @@ import { ROLE_HOME, useAuth } from "@/src/auth-client";
  * Landing page.
  *
  * Content describes IIUI School / Mardan Campus from pre-school through to
- * undergraduate degree study. Image slots use geometric panels rather than
- * photography; see components/landing/media-placeholder.tsx for the rationale
- * and for how to swap in real images later.
+ * undergraduate degree study.
+ *
+ * Photography: the hero uses the campus photo, and CampusMedia renders the
+ * gallery and clips. The leadership portraits and programme-card panels still
+ * use geometric stand-ins — see components/landing/media-placeholder.tsx for
+ * why, and for how to swap in real images later.
  *
  * This is the only file that needs "use client": it reads the session so the
  * LMS call-to-action can be personalised.
@@ -159,6 +164,7 @@ const QUICK_LINKS = [
   { href: "#mission", label: "Home" },
   { href: "#leadership", label: "About Us" },
   { href: "#academics", label: "Academics" },
+  { href: "#campus-life", label: "Campus Life" },
   { href: "#admissions", label: "Admissions" },
   { href: "#news", label: "News & Events" },
 ];
@@ -177,7 +183,17 @@ export function LandingPage() {
       <main className="flex-1">
         {/* 1 — Hero */}
         <section className="relative">
-          <MediaPlaceholder tone="gradient" ratio="" className="absolute inset-0" />
+          {/* Campus photograph behind a dark wash, so the headline keeps its
+              contrast whatever the photo's own brightness is. */}
+          <Image
+            src="/images/campus.jpg"
+            alt="IIUI School, Mardan campus"
+            fill
+            preload
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A]/95 via-[#0F172A]/80 to-[#8B0000]/60" />
           <div className="relative mx-auto w-full max-w-6xl px-4 py-24 md:px-6 md:py-32">
             <SectionTag tone="dark">WELCOME TO IIUI SCHOOL</SectionTag>
             <h1 className="mt-5 max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-white md:text-6xl">
@@ -347,7 +363,10 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* 6 — Testimonials & Community */}
+        {/* 6 — Campus Life (photographs and video) */}
+        <CampusMedia />
+
+        {/* 7 — Testimonials & Community */}
         <section id="community" className="scroll-mt-20 py-16 md:py-24">
           <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
             <SectionHeading tag="Parents & Alumnae" title="What our community says" />
@@ -375,7 +394,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* 7 — Admissions */}
+        {/* 8 — Admissions */}
         <section
           id="admissions"
           className="scroll-mt-20 border-y border-border bg-white py-16 md:py-24 dark:bg-card"
@@ -412,7 +431,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* 8 — News, Events & Notices */}
+        {/* 9 — News, Events & Notices */}
         <section id="news" className="scroll-mt-20 py-16 md:py-24">
           <div className="mx-auto w-full max-w-6xl px-4 md:px-6">
             <SectionHeading tag="News, Events & Notices" title="What's happening on campus" />
@@ -439,7 +458,7 @@ export function LandingPage() {
         </section>
       </main>
 
-      {/* 9 — Footer */}
+      {/* 10 — Footer */}
       <footer className="bg-[#1E293B] text-white">
         <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-14 md:grid-cols-2 md:px-6 lg:grid-cols-4">
           <div>
