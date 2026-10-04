@@ -246,6 +246,15 @@ exports.Prisma.TimetableSlotScalarFieldEnum = {
   room: 'room'
 };
 
+exports.Prisma.AdmissionEnquiryScalarFieldEnum = {
+  id: 'id',
+  parentName: 'parentName',
+  email: 'email',
+  phone: 'phone',
+  stage: 'stage',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -302,7 +311,8 @@ exports.Prisma.ModelName = {
   Submission: 'Submission',
   AttendanceRecord: 'AttendanceRecord',
   Notification: 'Notification',
-  TimetableSlot: 'TimetableSlot'
+  TimetableSlot: 'TimetableSlot',
+  AdmissionEnquiry: 'AdmissionEnquiry'
 };
 
 /**

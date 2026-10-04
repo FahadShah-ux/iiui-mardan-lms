@@ -78,6 +78,11 @@ export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
  * 
  */
 export type TimetableSlot = $Result.DefaultSelection<Prisma.$TimetableSlotPayload>
+/**
+ * Model AdmissionEnquiry
+ * 
+ */
+export type AdmissionEnquiry = $Result.DefaultSelection<Prisma.$AdmissionEnquiryPayload>
 
 /**
  * Enums
@@ -407,6 +412,16 @@ export class PrismaClient<
     * ```
     */
   get timetableSlot(): Prisma.TimetableSlotDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.admissionEnquiry`: Exposes CRUD operations for the **AdmissionEnquiry** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AdmissionEnquiries
+    * const admissionEnquiries = await prisma.admissionEnquiry.findMany()
+    * ```
+    */
+  get admissionEnquiry(): Prisma.AdmissionEnquiryDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -860,7 +875,8 @@ export namespace Prisma {
     Submission: 'Submission',
     AttendanceRecord: 'AttendanceRecord',
     Notification: 'Notification',
-    TimetableSlot: 'TimetableSlot'
+    TimetableSlot: 'TimetableSlot',
+    AdmissionEnquiry: 'AdmissionEnquiry'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -879,7 +895,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "grade" | "instructorGrade" | "user" | "course" | "enrollment" | "module" | "lecture" | "announcement" | "assignment" | "submission" | "attendanceRecord" | "notification" | "timetableSlot"
+      modelProps: "grade" | "instructorGrade" | "user" | "course" | "enrollment" | "module" | "lecture" | "announcement" | "assignment" | "submission" | "attendanceRecord" | "notification" | "timetableSlot" | "admissionEnquiry"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1845,6 +1861,80 @@ export namespace Prisma {
           }
         }
       }
+      AdmissionEnquiry: {
+        payload: Prisma.$AdmissionEnquiryPayload<ExtArgs>
+        fields: Prisma.AdmissionEnquiryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AdmissionEnquiryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdmissionEnquiryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AdmissionEnquiryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdmissionEnquiryPayload>
+          }
+          findFirst: {
+            args: Prisma.AdmissionEnquiryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdmissionEnquiryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AdmissionEnquiryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdmissionEnquiryPayload>
+          }
+          findMany: {
+            args: Prisma.AdmissionEnquiryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdmissionEnquiryPayload>[]
+          }
+          create: {
+            args: Prisma.AdmissionEnquiryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdmissionEnquiryPayload>
+          }
+          createMany: {
+            args: Prisma.AdmissionEnquiryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AdmissionEnquiryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdmissionEnquiryPayload>[]
+          }
+          delete: {
+            args: Prisma.AdmissionEnquiryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdmissionEnquiryPayload>
+          }
+          update: {
+            args: Prisma.AdmissionEnquiryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdmissionEnquiryPayload>
+          }
+          deleteMany: {
+            args: Prisma.AdmissionEnquiryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AdmissionEnquiryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AdmissionEnquiryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdmissionEnquiryPayload>[]
+          }
+          upsert: {
+            args: Prisma.AdmissionEnquiryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AdmissionEnquiryPayload>
+          }
+          aggregate: {
+            args: Prisma.AdmissionEnquiryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAdmissionEnquiry>
+          }
+          groupBy: {
+            args: Prisma.AdmissionEnquiryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AdmissionEnquiryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AdmissionEnquiryCountArgs<ExtArgs>
+            result: $Utils.Optional<AdmissionEnquiryCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1954,6 +2044,7 @@ export namespace Prisma {
     attendanceRecord?: AttendanceRecordOmit
     notification?: NotificationOmit
     timetableSlot?: TimetableSlotOmit
+    admissionEnquiry?: AdmissionEnquiryOmit
   }
 
   /* Types for Logging */
@@ -17336,6 +17427,1012 @@ export namespace Prisma {
 
 
   /**
+   * Model AdmissionEnquiry
+   */
+
+  export type AggregateAdmissionEnquiry = {
+    _count: AdmissionEnquiryCountAggregateOutputType | null
+    _min: AdmissionEnquiryMinAggregateOutputType | null
+    _max: AdmissionEnquiryMaxAggregateOutputType | null
+  }
+
+  export type AdmissionEnquiryMinAggregateOutputType = {
+    id: string | null
+    parentName: string | null
+    email: string | null
+    phone: string | null
+    stage: string | null
+    createdAt: Date | null
+  }
+
+  export type AdmissionEnquiryMaxAggregateOutputType = {
+    id: string | null
+    parentName: string | null
+    email: string | null
+    phone: string | null
+    stage: string | null
+    createdAt: Date | null
+  }
+
+  export type AdmissionEnquiryCountAggregateOutputType = {
+    id: number
+    parentName: number
+    email: number
+    phone: number
+    stage: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type AdmissionEnquiryMinAggregateInputType = {
+    id?: true
+    parentName?: true
+    email?: true
+    phone?: true
+    stage?: true
+    createdAt?: true
+  }
+
+  export type AdmissionEnquiryMaxAggregateInputType = {
+    id?: true
+    parentName?: true
+    email?: true
+    phone?: true
+    stage?: true
+    createdAt?: true
+  }
+
+  export type AdmissionEnquiryCountAggregateInputType = {
+    id?: true
+    parentName?: true
+    email?: true
+    phone?: true
+    stage?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type AdmissionEnquiryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AdmissionEnquiry to aggregate.
+     */
+    where?: AdmissionEnquiryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdmissionEnquiries to fetch.
+     */
+    orderBy?: AdmissionEnquiryOrderByWithRelationInput | AdmissionEnquiryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AdmissionEnquiryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdmissionEnquiries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdmissionEnquiries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AdmissionEnquiries
+    **/
+    _count?: true | AdmissionEnquiryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AdmissionEnquiryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AdmissionEnquiryMaxAggregateInputType
+  }
+
+  export type GetAdmissionEnquiryAggregateType<T extends AdmissionEnquiryAggregateArgs> = {
+        [P in keyof T & keyof AggregateAdmissionEnquiry]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAdmissionEnquiry[P]>
+      : GetScalarType<T[P], AggregateAdmissionEnquiry[P]>
+  }
+
+
+
+
+  export type AdmissionEnquiryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AdmissionEnquiryWhereInput
+    orderBy?: AdmissionEnquiryOrderByWithAggregationInput | AdmissionEnquiryOrderByWithAggregationInput[]
+    by: AdmissionEnquiryScalarFieldEnum[] | AdmissionEnquiryScalarFieldEnum
+    having?: AdmissionEnquiryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AdmissionEnquiryCountAggregateInputType | true
+    _min?: AdmissionEnquiryMinAggregateInputType
+    _max?: AdmissionEnquiryMaxAggregateInputType
+  }
+
+  export type AdmissionEnquiryGroupByOutputType = {
+    id: string
+    parentName: string
+    email: string
+    phone: string
+    stage: string
+    createdAt: Date
+    _count: AdmissionEnquiryCountAggregateOutputType | null
+    _min: AdmissionEnquiryMinAggregateOutputType | null
+    _max: AdmissionEnquiryMaxAggregateOutputType | null
+  }
+
+  type GetAdmissionEnquiryGroupByPayload<T extends AdmissionEnquiryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AdmissionEnquiryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AdmissionEnquiryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AdmissionEnquiryGroupByOutputType[P]>
+            : GetScalarType<T[P], AdmissionEnquiryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AdmissionEnquirySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    parentName?: boolean
+    email?: boolean
+    phone?: boolean
+    stage?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["admissionEnquiry"]>
+
+  export type AdmissionEnquirySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    parentName?: boolean
+    email?: boolean
+    phone?: boolean
+    stage?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["admissionEnquiry"]>
+
+  export type AdmissionEnquirySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    parentName?: boolean
+    email?: boolean
+    phone?: boolean
+    stage?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["admissionEnquiry"]>
+
+  export type AdmissionEnquirySelectScalar = {
+    id?: boolean
+    parentName?: boolean
+    email?: boolean
+    phone?: boolean
+    stage?: boolean
+    createdAt?: boolean
+  }
+
+  export type AdmissionEnquiryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "parentName" | "email" | "phone" | "stage" | "createdAt", ExtArgs["result"]["admissionEnquiry"]>
+
+  export type $AdmissionEnquiryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AdmissionEnquiry"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      parentName: string
+      email: string
+      phone: string
+      stage: string
+      createdAt: Date
+    }, ExtArgs["result"]["admissionEnquiry"]>
+    composites: {}
+  }
+
+  type AdmissionEnquiryGetPayload<S extends boolean | null | undefined | AdmissionEnquiryDefaultArgs> = $Result.GetResult<Prisma.$AdmissionEnquiryPayload, S>
+
+  type AdmissionEnquiryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AdmissionEnquiryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AdmissionEnquiryCountAggregateInputType | true
+    }
+
+  export interface AdmissionEnquiryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AdmissionEnquiry'], meta: { name: 'AdmissionEnquiry' } }
+    /**
+     * Find zero or one AdmissionEnquiry that matches the filter.
+     * @param {AdmissionEnquiryFindUniqueArgs} args - Arguments to find a AdmissionEnquiry
+     * @example
+     * // Get one AdmissionEnquiry
+     * const admissionEnquiry = await prisma.admissionEnquiry.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AdmissionEnquiryFindUniqueArgs>(args: SelectSubset<T, AdmissionEnquiryFindUniqueArgs<ExtArgs>>): Prisma__AdmissionEnquiryClient<$Result.GetResult<Prisma.$AdmissionEnquiryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AdmissionEnquiry that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AdmissionEnquiryFindUniqueOrThrowArgs} args - Arguments to find a AdmissionEnquiry
+     * @example
+     * // Get one AdmissionEnquiry
+     * const admissionEnquiry = await prisma.admissionEnquiry.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AdmissionEnquiryFindUniqueOrThrowArgs>(args: SelectSubset<T, AdmissionEnquiryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AdmissionEnquiryClient<$Result.GetResult<Prisma.$AdmissionEnquiryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AdmissionEnquiry that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdmissionEnquiryFindFirstArgs} args - Arguments to find a AdmissionEnquiry
+     * @example
+     * // Get one AdmissionEnquiry
+     * const admissionEnquiry = await prisma.admissionEnquiry.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AdmissionEnquiryFindFirstArgs>(args?: SelectSubset<T, AdmissionEnquiryFindFirstArgs<ExtArgs>>): Prisma__AdmissionEnquiryClient<$Result.GetResult<Prisma.$AdmissionEnquiryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AdmissionEnquiry that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdmissionEnquiryFindFirstOrThrowArgs} args - Arguments to find a AdmissionEnquiry
+     * @example
+     * // Get one AdmissionEnquiry
+     * const admissionEnquiry = await prisma.admissionEnquiry.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AdmissionEnquiryFindFirstOrThrowArgs>(args?: SelectSubset<T, AdmissionEnquiryFindFirstOrThrowArgs<ExtArgs>>): Prisma__AdmissionEnquiryClient<$Result.GetResult<Prisma.$AdmissionEnquiryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AdmissionEnquiries that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdmissionEnquiryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AdmissionEnquiries
+     * const admissionEnquiries = await prisma.admissionEnquiry.findMany()
+     * 
+     * // Get first 10 AdmissionEnquiries
+     * const admissionEnquiries = await prisma.admissionEnquiry.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const admissionEnquiryWithIdOnly = await prisma.admissionEnquiry.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AdmissionEnquiryFindManyArgs>(args?: SelectSubset<T, AdmissionEnquiryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdmissionEnquiryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AdmissionEnquiry.
+     * @param {AdmissionEnquiryCreateArgs} args - Arguments to create a AdmissionEnquiry.
+     * @example
+     * // Create one AdmissionEnquiry
+     * const AdmissionEnquiry = await prisma.admissionEnquiry.create({
+     *   data: {
+     *     // ... data to create a AdmissionEnquiry
+     *   }
+     * })
+     * 
+     */
+    create<T extends AdmissionEnquiryCreateArgs>(args: SelectSubset<T, AdmissionEnquiryCreateArgs<ExtArgs>>): Prisma__AdmissionEnquiryClient<$Result.GetResult<Prisma.$AdmissionEnquiryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AdmissionEnquiries.
+     * @param {AdmissionEnquiryCreateManyArgs} args - Arguments to create many AdmissionEnquiries.
+     * @example
+     * // Create many AdmissionEnquiries
+     * const admissionEnquiry = await prisma.admissionEnquiry.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AdmissionEnquiryCreateManyArgs>(args?: SelectSubset<T, AdmissionEnquiryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AdmissionEnquiries and returns the data saved in the database.
+     * @param {AdmissionEnquiryCreateManyAndReturnArgs} args - Arguments to create many AdmissionEnquiries.
+     * @example
+     * // Create many AdmissionEnquiries
+     * const admissionEnquiry = await prisma.admissionEnquiry.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AdmissionEnquiries and only return the `id`
+     * const admissionEnquiryWithIdOnly = await prisma.admissionEnquiry.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AdmissionEnquiryCreateManyAndReturnArgs>(args?: SelectSubset<T, AdmissionEnquiryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdmissionEnquiryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AdmissionEnquiry.
+     * @param {AdmissionEnquiryDeleteArgs} args - Arguments to delete one AdmissionEnquiry.
+     * @example
+     * // Delete one AdmissionEnquiry
+     * const AdmissionEnquiry = await prisma.admissionEnquiry.delete({
+     *   where: {
+     *     // ... filter to delete one AdmissionEnquiry
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AdmissionEnquiryDeleteArgs>(args: SelectSubset<T, AdmissionEnquiryDeleteArgs<ExtArgs>>): Prisma__AdmissionEnquiryClient<$Result.GetResult<Prisma.$AdmissionEnquiryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AdmissionEnquiry.
+     * @param {AdmissionEnquiryUpdateArgs} args - Arguments to update one AdmissionEnquiry.
+     * @example
+     * // Update one AdmissionEnquiry
+     * const admissionEnquiry = await prisma.admissionEnquiry.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AdmissionEnquiryUpdateArgs>(args: SelectSubset<T, AdmissionEnquiryUpdateArgs<ExtArgs>>): Prisma__AdmissionEnquiryClient<$Result.GetResult<Prisma.$AdmissionEnquiryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AdmissionEnquiries.
+     * @param {AdmissionEnquiryDeleteManyArgs} args - Arguments to filter AdmissionEnquiries to delete.
+     * @example
+     * // Delete a few AdmissionEnquiries
+     * const { count } = await prisma.admissionEnquiry.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AdmissionEnquiryDeleteManyArgs>(args?: SelectSubset<T, AdmissionEnquiryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AdmissionEnquiries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdmissionEnquiryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AdmissionEnquiries
+     * const admissionEnquiry = await prisma.admissionEnquiry.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AdmissionEnquiryUpdateManyArgs>(args: SelectSubset<T, AdmissionEnquiryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AdmissionEnquiries and returns the data updated in the database.
+     * @param {AdmissionEnquiryUpdateManyAndReturnArgs} args - Arguments to update many AdmissionEnquiries.
+     * @example
+     * // Update many AdmissionEnquiries
+     * const admissionEnquiry = await prisma.admissionEnquiry.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AdmissionEnquiries and only return the `id`
+     * const admissionEnquiryWithIdOnly = await prisma.admissionEnquiry.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AdmissionEnquiryUpdateManyAndReturnArgs>(args: SelectSubset<T, AdmissionEnquiryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AdmissionEnquiryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AdmissionEnquiry.
+     * @param {AdmissionEnquiryUpsertArgs} args - Arguments to update or create a AdmissionEnquiry.
+     * @example
+     * // Update or create a AdmissionEnquiry
+     * const admissionEnquiry = await prisma.admissionEnquiry.upsert({
+     *   create: {
+     *     // ... data to create a AdmissionEnquiry
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AdmissionEnquiry we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AdmissionEnquiryUpsertArgs>(args: SelectSubset<T, AdmissionEnquiryUpsertArgs<ExtArgs>>): Prisma__AdmissionEnquiryClient<$Result.GetResult<Prisma.$AdmissionEnquiryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AdmissionEnquiries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdmissionEnquiryCountArgs} args - Arguments to filter AdmissionEnquiries to count.
+     * @example
+     * // Count the number of AdmissionEnquiries
+     * const count = await prisma.admissionEnquiry.count({
+     *   where: {
+     *     // ... the filter for the AdmissionEnquiries we want to count
+     *   }
+     * })
+    **/
+    count<T extends AdmissionEnquiryCountArgs>(
+      args?: Subset<T, AdmissionEnquiryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AdmissionEnquiryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AdmissionEnquiry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdmissionEnquiryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AdmissionEnquiryAggregateArgs>(args: Subset<T, AdmissionEnquiryAggregateArgs>): Prisma.PrismaPromise<GetAdmissionEnquiryAggregateType<T>>
+
+    /**
+     * Group by AdmissionEnquiry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AdmissionEnquiryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AdmissionEnquiryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AdmissionEnquiryGroupByArgs['orderBy'] }
+        : { orderBy?: AdmissionEnquiryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AdmissionEnquiryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAdmissionEnquiryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AdmissionEnquiry model
+   */
+  readonly fields: AdmissionEnquiryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AdmissionEnquiry.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AdmissionEnquiryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AdmissionEnquiry model
+   */
+  interface AdmissionEnquiryFieldRefs {
+    readonly id: FieldRef<"AdmissionEnquiry", 'String'>
+    readonly parentName: FieldRef<"AdmissionEnquiry", 'String'>
+    readonly email: FieldRef<"AdmissionEnquiry", 'String'>
+    readonly phone: FieldRef<"AdmissionEnquiry", 'String'>
+    readonly stage: FieldRef<"AdmissionEnquiry", 'String'>
+    readonly createdAt: FieldRef<"AdmissionEnquiry", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AdmissionEnquiry findUnique
+   */
+  export type AdmissionEnquiryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdmissionEnquiry
+     */
+    select?: AdmissionEnquirySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdmissionEnquiry
+     */
+    omit?: AdmissionEnquiryOmit<ExtArgs> | null
+    /**
+     * Filter, which AdmissionEnquiry to fetch.
+     */
+    where: AdmissionEnquiryWhereUniqueInput
+  }
+
+  /**
+   * AdmissionEnquiry findUniqueOrThrow
+   */
+  export type AdmissionEnquiryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdmissionEnquiry
+     */
+    select?: AdmissionEnquirySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdmissionEnquiry
+     */
+    omit?: AdmissionEnquiryOmit<ExtArgs> | null
+    /**
+     * Filter, which AdmissionEnquiry to fetch.
+     */
+    where: AdmissionEnquiryWhereUniqueInput
+  }
+
+  /**
+   * AdmissionEnquiry findFirst
+   */
+  export type AdmissionEnquiryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdmissionEnquiry
+     */
+    select?: AdmissionEnquirySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdmissionEnquiry
+     */
+    omit?: AdmissionEnquiryOmit<ExtArgs> | null
+    /**
+     * Filter, which AdmissionEnquiry to fetch.
+     */
+    where?: AdmissionEnquiryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdmissionEnquiries to fetch.
+     */
+    orderBy?: AdmissionEnquiryOrderByWithRelationInput | AdmissionEnquiryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AdmissionEnquiries.
+     */
+    cursor?: AdmissionEnquiryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdmissionEnquiries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdmissionEnquiries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AdmissionEnquiries.
+     */
+    distinct?: AdmissionEnquiryScalarFieldEnum | AdmissionEnquiryScalarFieldEnum[]
+  }
+
+  /**
+   * AdmissionEnquiry findFirstOrThrow
+   */
+  export type AdmissionEnquiryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdmissionEnquiry
+     */
+    select?: AdmissionEnquirySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdmissionEnquiry
+     */
+    omit?: AdmissionEnquiryOmit<ExtArgs> | null
+    /**
+     * Filter, which AdmissionEnquiry to fetch.
+     */
+    where?: AdmissionEnquiryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdmissionEnquiries to fetch.
+     */
+    orderBy?: AdmissionEnquiryOrderByWithRelationInput | AdmissionEnquiryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AdmissionEnquiries.
+     */
+    cursor?: AdmissionEnquiryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdmissionEnquiries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdmissionEnquiries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AdmissionEnquiries.
+     */
+    distinct?: AdmissionEnquiryScalarFieldEnum | AdmissionEnquiryScalarFieldEnum[]
+  }
+
+  /**
+   * AdmissionEnquiry findMany
+   */
+  export type AdmissionEnquiryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdmissionEnquiry
+     */
+    select?: AdmissionEnquirySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdmissionEnquiry
+     */
+    omit?: AdmissionEnquiryOmit<ExtArgs> | null
+    /**
+     * Filter, which AdmissionEnquiries to fetch.
+     */
+    where?: AdmissionEnquiryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AdmissionEnquiries to fetch.
+     */
+    orderBy?: AdmissionEnquiryOrderByWithRelationInput | AdmissionEnquiryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AdmissionEnquiries.
+     */
+    cursor?: AdmissionEnquiryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AdmissionEnquiries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AdmissionEnquiries.
+     */
+    skip?: number
+    distinct?: AdmissionEnquiryScalarFieldEnum | AdmissionEnquiryScalarFieldEnum[]
+  }
+
+  /**
+   * AdmissionEnquiry create
+   */
+  export type AdmissionEnquiryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdmissionEnquiry
+     */
+    select?: AdmissionEnquirySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdmissionEnquiry
+     */
+    omit?: AdmissionEnquiryOmit<ExtArgs> | null
+    /**
+     * The data needed to create a AdmissionEnquiry.
+     */
+    data: XOR<AdmissionEnquiryCreateInput, AdmissionEnquiryUncheckedCreateInput>
+  }
+
+  /**
+   * AdmissionEnquiry createMany
+   */
+  export type AdmissionEnquiryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AdmissionEnquiries.
+     */
+    data: AdmissionEnquiryCreateManyInput | AdmissionEnquiryCreateManyInput[]
+  }
+
+  /**
+   * AdmissionEnquiry createManyAndReturn
+   */
+  export type AdmissionEnquiryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdmissionEnquiry
+     */
+    select?: AdmissionEnquirySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdmissionEnquiry
+     */
+    omit?: AdmissionEnquiryOmit<ExtArgs> | null
+    /**
+     * The data used to create many AdmissionEnquiries.
+     */
+    data: AdmissionEnquiryCreateManyInput | AdmissionEnquiryCreateManyInput[]
+  }
+
+  /**
+   * AdmissionEnquiry update
+   */
+  export type AdmissionEnquiryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdmissionEnquiry
+     */
+    select?: AdmissionEnquirySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdmissionEnquiry
+     */
+    omit?: AdmissionEnquiryOmit<ExtArgs> | null
+    /**
+     * The data needed to update a AdmissionEnquiry.
+     */
+    data: XOR<AdmissionEnquiryUpdateInput, AdmissionEnquiryUncheckedUpdateInput>
+    /**
+     * Choose, which AdmissionEnquiry to update.
+     */
+    where: AdmissionEnquiryWhereUniqueInput
+  }
+
+  /**
+   * AdmissionEnquiry updateMany
+   */
+  export type AdmissionEnquiryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AdmissionEnquiries.
+     */
+    data: XOR<AdmissionEnquiryUpdateManyMutationInput, AdmissionEnquiryUncheckedUpdateManyInput>
+    /**
+     * Filter which AdmissionEnquiries to update
+     */
+    where?: AdmissionEnquiryWhereInput
+    /**
+     * Limit how many AdmissionEnquiries to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AdmissionEnquiry updateManyAndReturn
+   */
+  export type AdmissionEnquiryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdmissionEnquiry
+     */
+    select?: AdmissionEnquirySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdmissionEnquiry
+     */
+    omit?: AdmissionEnquiryOmit<ExtArgs> | null
+    /**
+     * The data used to update AdmissionEnquiries.
+     */
+    data: XOR<AdmissionEnquiryUpdateManyMutationInput, AdmissionEnquiryUncheckedUpdateManyInput>
+    /**
+     * Filter which AdmissionEnquiries to update
+     */
+    where?: AdmissionEnquiryWhereInput
+    /**
+     * Limit how many AdmissionEnquiries to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AdmissionEnquiry upsert
+   */
+  export type AdmissionEnquiryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdmissionEnquiry
+     */
+    select?: AdmissionEnquirySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdmissionEnquiry
+     */
+    omit?: AdmissionEnquiryOmit<ExtArgs> | null
+    /**
+     * The filter to search for the AdmissionEnquiry to update in case it exists.
+     */
+    where: AdmissionEnquiryWhereUniqueInput
+    /**
+     * In case the AdmissionEnquiry found by the `where` argument doesn't exist, create a new AdmissionEnquiry with this data.
+     */
+    create: XOR<AdmissionEnquiryCreateInput, AdmissionEnquiryUncheckedCreateInput>
+    /**
+     * In case the AdmissionEnquiry was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AdmissionEnquiryUpdateInput, AdmissionEnquiryUncheckedUpdateInput>
+  }
+
+  /**
+   * AdmissionEnquiry delete
+   */
+  export type AdmissionEnquiryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdmissionEnquiry
+     */
+    select?: AdmissionEnquirySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdmissionEnquiry
+     */
+    omit?: AdmissionEnquiryOmit<ExtArgs> | null
+    /**
+     * Filter which AdmissionEnquiry to delete.
+     */
+    where: AdmissionEnquiryWhereUniqueInput
+  }
+
+  /**
+   * AdmissionEnquiry deleteMany
+   */
+  export type AdmissionEnquiryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AdmissionEnquiries to delete
+     */
+    where?: AdmissionEnquiryWhereInput
+    /**
+     * Limit how many AdmissionEnquiries to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AdmissionEnquiry without action
+   */
+  export type AdmissionEnquiryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AdmissionEnquiry
+     */
+    select?: AdmissionEnquirySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AdmissionEnquiry
+     */
+    omit?: AdmissionEnquiryOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -17511,6 +18608,18 @@ export namespace Prisma {
   };
 
   export type TimetableSlotScalarFieldEnum = (typeof TimetableSlotScalarFieldEnum)[keyof typeof TimetableSlotScalarFieldEnum]
+
+
+  export const AdmissionEnquiryScalarFieldEnum: {
+    id: 'id',
+    parentName: 'parentName',
+    email: 'email',
+    phone: 'phone',
+    stage: 'stage',
+    createdAt: 'createdAt'
+  };
+
+  export type AdmissionEnquiryScalarFieldEnum = (typeof AdmissionEnquiryScalarFieldEnum)[keyof typeof AdmissionEnquiryScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -18546,6 +19655,63 @@ export namespace Prisma {
     room?: StringWithAggregatesFilter<"TimetableSlot"> | string
   }
 
+  export type AdmissionEnquiryWhereInput = {
+    AND?: AdmissionEnquiryWhereInput | AdmissionEnquiryWhereInput[]
+    OR?: AdmissionEnquiryWhereInput[]
+    NOT?: AdmissionEnquiryWhereInput | AdmissionEnquiryWhereInput[]
+    id?: StringFilter<"AdmissionEnquiry"> | string
+    parentName?: StringFilter<"AdmissionEnquiry"> | string
+    email?: StringFilter<"AdmissionEnquiry"> | string
+    phone?: StringFilter<"AdmissionEnquiry"> | string
+    stage?: StringFilter<"AdmissionEnquiry"> | string
+    createdAt?: DateTimeFilter<"AdmissionEnquiry"> | Date | string
+  }
+
+  export type AdmissionEnquiryOrderByWithRelationInput = {
+    id?: SortOrder
+    parentName?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    stage?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AdmissionEnquiryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AdmissionEnquiryWhereInput | AdmissionEnquiryWhereInput[]
+    OR?: AdmissionEnquiryWhereInput[]
+    NOT?: AdmissionEnquiryWhereInput | AdmissionEnquiryWhereInput[]
+    parentName?: StringFilter<"AdmissionEnquiry"> | string
+    email?: StringFilter<"AdmissionEnquiry"> | string
+    phone?: StringFilter<"AdmissionEnquiry"> | string
+    stage?: StringFilter<"AdmissionEnquiry"> | string
+    createdAt?: DateTimeFilter<"AdmissionEnquiry"> | Date | string
+  }, "id">
+
+  export type AdmissionEnquiryOrderByWithAggregationInput = {
+    id?: SortOrder
+    parentName?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    stage?: SortOrder
+    createdAt?: SortOrder
+    _count?: AdmissionEnquiryCountOrderByAggregateInput
+    _max?: AdmissionEnquiryMaxOrderByAggregateInput
+    _min?: AdmissionEnquiryMinOrderByAggregateInput
+  }
+
+  export type AdmissionEnquiryScalarWhereWithAggregatesInput = {
+    AND?: AdmissionEnquiryScalarWhereWithAggregatesInput | AdmissionEnquiryScalarWhereWithAggregatesInput[]
+    OR?: AdmissionEnquiryScalarWhereWithAggregatesInput[]
+    NOT?: AdmissionEnquiryScalarWhereWithAggregatesInput | AdmissionEnquiryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AdmissionEnquiry"> | string
+    parentName?: StringWithAggregatesFilter<"AdmissionEnquiry"> | string
+    email?: StringWithAggregatesFilter<"AdmissionEnquiry"> | string
+    phone?: StringWithAggregatesFilter<"AdmissionEnquiry"> | string
+    stage?: StringWithAggregatesFilter<"AdmissionEnquiry"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"AdmissionEnquiry"> | Date | string
+  }
+
   export type GradeCreateInput = {
     id?: string
     name: string
@@ -19499,6 +20665,69 @@ export namespace Prisma {
     room?: StringFieldUpdateOperationsInput | string
   }
 
+  export type AdmissionEnquiryCreateInput = {
+    id?: string
+    parentName: string
+    email: string
+    phone: string
+    stage: string
+    createdAt?: Date | string
+  }
+
+  export type AdmissionEnquiryUncheckedCreateInput = {
+    id?: string
+    parentName: string
+    email: string
+    phone: string
+    stage: string
+    createdAt?: Date | string
+  }
+
+  export type AdmissionEnquiryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    parentName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    stage?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdmissionEnquiryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    parentName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    stage?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdmissionEnquiryCreateManyInput = {
+    id?: string
+    parentName: string
+    email: string
+    phone: string
+    stage: string
+    createdAt?: Date | string
+  }
+
+  export type AdmissionEnquiryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    parentName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    stage?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AdmissionEnquiryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    parentName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    stage?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[]
@@ -20447,6 +21676,33 @@ export namespace Prisma {
 
   export type TimetableSlotSumOrderByAggregateInput = {
     day?: SortOrder
+  }
+
+  export type AdmissionEnquiryCountOrderByAggregateInput = {
+    id?: SortOrder
+    parentName?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    stage?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AdmissionEnquiryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    parentName?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    stage?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type AdmissionEnquiryMinOrderByAggregateInput = {
+    id?: SortOrder
+    parentName?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    stage?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type UserCreateNestedManyWithoutGradeInput = {

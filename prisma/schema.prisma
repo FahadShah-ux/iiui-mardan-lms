@@ -213,3 +213,15 @@ model TimetableSlot {
   room     String
 }
 
+// Public landing-page enquiry form. Deliberately has no relation to User:
+// these are unauthenticated submissions and must never reference or create
+// an account.
+model AdmissionEnquiry {
+  id         String   @id @default(cuid())
+  parentName String
+  email      String
+  phone      String
+  stage      String
+  createdAt  DateTime @default(now())
+}
+
