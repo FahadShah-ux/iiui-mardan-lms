@@ -1,10 +1,11 @@
 "use client";
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import { useAuth, apiFetch } from "@/src/auth-client";
 import { useMounted } from "@/src/use-mounted";
 import { PageHeader } from "@/components/shared/page-header";
+import { ErrorState } from "@/components/shared/error-state";
+import { LoadingScreen } from "@/components/shared/loading-screen";
 import { AdminCoursesManager } from "@/components/admin/courses-manager";
 
 type CoursesData = {
@@ -32,6 +33,8 @@ export default function AdminCoursesPage() {
   const mounted = useMounted();
   const user = useAuth((s) => s.user);
   const [data, setData] = React.useState<CoursesData | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
+  const [attempt, setAttempt] = React.useState(0);
 
   React.useEffect(() => {
     if (!mounted) return;
@@ -40,15 +43,29 @@ export default function AdminCoursesPage() {
 
   React.useEffect(() => {
     if (!mounted || !user) return;
+    let cancelled = false;
     apiFetch<CoursesData>("/api/admin/courses/page")
-      .then(setData)
-      .catch(() => {});
-  }, [mounted, user]);
+      .then((d) => {
+        if (cancelled) return;
+        setData(d);
+        setError(null);
+      })
+      .catch((err: Error) => {
+        if (!cancelled) setError(err.message);
+      });
+    return () => { cancelled = true; };
+  }, [mounted, user, attempt]);
 
-  if (!mounted || !user)
-    return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
-  if (!data)
-    return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
+  if (!mounted || !user) return <LoadingScreen />;
+  if (error && !data)
+    return (
+      <ErrorState
+        title="Could not load courses"
+        description={error}
+        onRetry={() => setAttempt((a) => a + 1)}
+      />
+    );
+  if (!data) return <LoadingScreen />;
 
   return (
     <div>

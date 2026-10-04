@@ -2,10 +2,12 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, GraduationCap } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 import { useAuth, apiFetch } from "@/src/auth-client";
 import { useMounted } from "@/src/use-mounted";
 import { PageHeader } from "@/components/shared/page-header";
+import { ErrorState } from "@/components/shared/error-state";
+import { LoadingScreen } from "@/components/shared/loading-screen";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -45,6 +47,8 @@ export default function StudentCoursesPage() {
   const mounted = useMounted();
   const user = useAuth((s) => s.user);
   const [data, setData] = React.useState<CoursesData | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
+  const [attempt, setAttempt] = React.useState(0);
 
   React.useEffect(() => {
     if (!mounted) return;
@@ -53,13 +57,29 @@ export default function StudentCoursesPage() {
 
   React.useEffect(() => {
     if (!mounted || !user) return;
+    let cancelled = false;
     apiFetch<CoursesData>("/api/student/courses")
-      .then(setData)
-      .catch(() => {});
-  }, [mounted, user]);
+      .then((d) => {
+        if (cancelled) return;
+        setData(d);
+        setError(null);
+      })
+      .catch((err: Error) => {
+        if (!cancelled) setError(err.message);
+      });
+    return () => { cancelled = true; };
+  }, [mounted, user, attempt]);
 
-  if (!mounted || !user) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
-  if (!data) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
+  if (!mounted || !user) return <LoadingScreen />;
+  if (error && !data)
+    return (
+      <ErrorState
+        title="Could not load your courses"
+        description={error}
+        onRetry={() => setAttempt((a) => a + 1)}
+      />
+    );
+  if (!data) return <LoadingScreen />;
 
   const { enrollments, available } = data;
 
@@ -89,7 +109,7 @@ export default function StudentCoursesPage() {
                 <div>
                   <p className="font-semibold">{e.course.title}</p>
                   <p className="text-xs text-muted-foreground">
-                    {e.course.code} · {e.course.semester} · {e.course.credits} cr
+                    {e.course.code} Â· {e.course.semester} Â· {e.course.credits} cr
                   </p>
                   {e.course.instructor && <p className="text-xs text-muted-foreground">by {e.course.instructor.name}</p>}
                 </div>
@@ -123,7 +143,7 @@ export default function StudentCoursesPage() {
               </div>
               <div>
                 <p className="font-semibold">{c.title}</p>
-                <p className="text-xs text-muted-foreground">{c.code} · {c.semester} · {c.credits} cr</p>
+                <p className="text-xs text-muted-foreground">{c.code} Â· {c.semester} Â· {c.credits} cr</p>
                 {c.instructor && <p className="text-xs text-muted-foreground">by {c.instructor.name}</p>}
               </div>
               <p className="line-clamp-2 text-sm text-muted-foreground">{c.description}</p>

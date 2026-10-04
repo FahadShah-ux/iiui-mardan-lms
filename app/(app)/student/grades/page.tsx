@@ -1,10 +1,12 @@
 "use client";
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Award, FileText, TrendingUp } from "lucide-react";
+import { Award, FileText, TrendingUp } from "lucide-react";
 import { useAuth, apiFetch } from "@/src/auth-client";
 import { useMounted } from "@/src/use-mounted";
 import { PageHeader } from "@/components/shared/page-header";
+import { ErrorState } from "@/components/shared/error-state";
+import { LoadingScreen } from "@/components/shared/loading-screen";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -39,6 +41,8 @@ export default function StudentGradesPage() {
   const mounted = useMounted();
   const user = useAuth((s) => s.user);
   const [data, setData] = React.useState<GradesData | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
+  const [attempt, setAttempt] = React.useState(0);
 
   React.useEffect(() => {
     if (!mounted) return;
@@ -47,13 +51,29 @@ export default function StudentGradesPage() {
 
   React.useEffect(() => {
     if (!mounted || !user) return;
+    let cancelled = false;
     apiFetch<GradesData>("/api/student/grades")
-      .then(setData)
-      .catch(() => {});
-  }, [mounted, user]);
+      .then((d) => {
+        if (cancelled) return;
+        setData(d);
+        setError(null);
+      })
+      .catch((err: Error) => {
+        if (!cancelled) setError(err.message);
+      });
+    return () => { cancelled = true; };
+  }, [mounted, user, attempt]);
 
-  if (!mounted || !user) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
-  if (!data) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
+  if (!mounted || !user) return <LoadingScreen />;
+  if (error && !data)
+    return (
+      <ErrorState
+        title="Could not load your grades"
+        description={error}
+        onRetry={() => setAttempt((a) => a + 1)}
+      />
+    );
+  if (!data) return <LoadingScreen />;
 
   const { gradedCourses, allGradedCount, overallPct, overallEarned, overallMax } = data;
 
@@ -63,7 +83,7 @@ export default function StudentGradesPage() {
 
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
         <StatCard title="Graded Assignments" value={allGradedCount} icon={FileText} accent="#990000" />
-        <StatCard title="Overall Average" value={overallPct !== null ? `${overallPct}%` : "—"} icon={TrendingUp} accent="#0f766e" />
+        <StatCard title="Overall Average" value={overallPct !== null ? `${overallPct}%` : "â€”"} icon={TrendingUp} accent="#0f766e" />
         <StatCard title="Marks Earned" value={`${overallEarned}/${overallMax}`} icon={Award} accent="#b45309" />
       </div>
 

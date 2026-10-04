@@ -1,11 +1,13 @@
 "use client";
 import * as React from "react";
-import { Users, BookOpen, GraduationCap, Loader2 } from "lucide-react";
+import { Users, BookOpen, GraduationCap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth, apiFetch } from "@/src/auth-client";
 import { useMounted } from "@/src/use-mounted";
 import { StatCard } from "@/components/shared/stat-card";
 import { PageHeader } from "@/components/shared/page-header";
+import { ErrorState } from "@/components/shared/error-state";
+import { LoadingScreen } from "@/components/shared/loading-screen";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { RecentAnnouncements } from "@/components/admin/recent-announcements";
@@ -38,6 +40,8 @@ export default function AdminDashboardPage() {
   const mounted = useMounted();
   const user = useAuth((s) => s.user);
   const [data, setData] = React.useState<AdminDashboardData | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
+  const [attempt, setAttempt] = React.useState(0);
 
   React.useEffect(() => {
     if (!mounted) return;
@@ -46,15 +50,29 @@ export default function AdminDashboardPage() {
 
   React.useEffect(() => {
     if (!mounted || !user) return;
+    let cancelled = false;
     apiFetch<AdminDashboardData>("/api/dashboard/admin")
-      .then(setData)
-      .catch(() => {});
-  }, [mounted, user]);
+      .then((d) => {
+        if (cancelled) return;
+        setData(d);
+        setError(null);
+      })
+      .catch((err: Error) => {
+        if (!cancelled) setError(err.message);
+      });
+    return () => { cancelled = true; };
+  }, [mounted, user, attempt]);
 
-  if (!mounted || !user)
-    return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
-  if (!data)
-    return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
+  if (!mounted || !user) return <LoadingScreen />;
+  if (error && !data)
+    return (
+      <ErrorState
+        title="Could not load the dashboard"
+        description={error}
+        onRetry={() => setAttempt((a) => a + 1)}
+      />
+    );
+  if (!data) return <LoadingScreen />;
 
   const { students, instructors, courses, grades, enrollments, pendingSubs } = data;
 

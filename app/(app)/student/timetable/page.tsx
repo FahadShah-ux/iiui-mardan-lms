@@ -1,10 +1,11 @@
 "use client";
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import { useAuth, apiFetch } from "@/src/auth-client";
 import { useMounted } from "@/src/use-mounted";
 import { PageHeader } from "@/components/shared/page-header";
+import { ErrorState } from "@/components/shared/error-state";
+import { LoadingScreen } from "@/components/shared/loading-screen";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState } from "@/components/shared/empty-state";
 
@@ -28,6 +29,8 @@ export default function StudentTimetablePage() {
   const mounted = useMounted();
   const user = useAuth((s) => s.user);
   const [data, setData] = React.useState<TimetableData | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
+  const [attempt, setAttempt] = React.useState(0);
 
   React.useEffect(() => {
     if (!mounted) return;
@@ -36,13 +39,29 @@ export default function StudentTimetablePage() {
 
   React.useEffect(() => {
     if (!mounted || !user) return;
+    let cancelled = false;
     apiFetch<TimetableData>("/api/student/timetable")
-      .then(setData)
-      .catch(() => {});
-  }, [mounted, user]);
+      .then((d) => {
+        if (cancelled) return;
+        setData(d);
+        setError(null);
+      })
+      .catch((err: Error) => {
+        if (!cancelled) setError(err.message);
+      });
+    return () => { cancelled = true; };
+  }, [mounted, user, attempt]);
 
-  if (!mounted || !user) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
-  if (!data) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
+  if (!mounted || !user) return <LoadingScreen />;
+  if (error && !data)
+    return (
+      <ErrorState
+        title="Could not load your timetable"
+        description={error}
+        onRetry={() => setAttempt((a) => a + 1)}
+      />
+    );
+  if (!data) return <LoadingScreen />;
 
   const slots = data.slots;
   const hasTimetable = slots.length > 0;
@@ -76,7 +95,7 @@ export default function StudentTimetablePage() {
                         <div key={s.id} className="rounded-lg p-3 text-white" style={{ backgroundColor: s.color }}>
                           <p className="text-sm font-semibold">{s.courseCode}</p>
                           <p className="text-xs opacity-90">{s.courseTitle}</p>
-                          <p className="mt-1 text-xs opacity-80">{s.start} – {s.end}</p>
+                          <p className="mt-1 text-xs opacity-80">{s.start} â€“ {s.end}</p>
                           <p className="text-xs opacity-80">Room {s.room}</p>
                         </div>
                       ))}

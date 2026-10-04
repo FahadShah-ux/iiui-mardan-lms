@@ -2,11 +2,13 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, GraduationCap, Clock, Megaphone } from "lucide-react";
+import { GraduationCap, Clock, Megaphone } from "lucide-react";
 import { useAuth, apiFetch } from "@/src/auth-client";
 import { useMounted } from "@/src/use-mounted";
 import { StatCard } from "@/components/shared/stat-card";
 import { PageHeader } from "@/components/shared/page-header";
+import { ErrorState } from "@/components/shared/error-state";
+import { LoadingScreen } from "@/components/shared/loading-screen";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -46,6 +48,8 @@ export default function StudentDashboardPage() {
   const mounted = useMounted();
   const user = useAuth((s) => s.user);
   const [data, setData] = React.useState<DashboardData | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
+  const [attempt, setAttempt] = React.useState(0);
 
   React.useEffect(() => {
     if (!mounted) return;
@@ -54,13 +58,29 @@ export default function StudentDashboardPage() {
 
   React.useEffect(() => {
     if (!mounted || !user) return;
+    let cancelled = false;
     apiFetch<DashboardData>("/api/dashboard/student")
-      .then(setData)
-      .catch(() => {});
-  }, [mounted, user]);
+      .then((d) => {
+        if (cancelled) return;
+        setData(d);
+        setError(null);
+      })
+      .catch((err: Error) => {
+        if (!cancelled) setError(err.message);
+      });
+    return () => { cancelled = true; };
+  }, [mounted, user, attempt]);
 
-  if (!mounted || !user) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
-  if (!data) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
+  if (!mounted || !user) return <LoadingScreen />;
+  if (error && !data)
+    return (
+      <ErrorState
+        title="Could not load your dashboard"
+        description={error}
+        onRetry={() => setAttempt((a) => a + 1)}
+      />
+    );
+  if (!data) return <LoadingScreen />;
 
   const { enrollments, deadlines, announcements } = data;
   const totalCredits = enrollments.reduce((sum, e) => sum + e.course.credits, 0);
@@ -88,7 +108,7 @@ export default function StudentDashboardPage() {
                 <div className="mb-1 flex items-center justify-between">
                   <div>
                     <p className="text-sm font-semibold">{e.course.title}</p>
-                    <p className="text-xs text-muted-foreground">{e.course.code}{e.course.instructor ? ` · ${e.course.instructor.name}` : ""}</p>
+                    <p className="text-xs text-muted-foreground">{e.course.code}{e.course.instructor ? ` Â· ${e.course.instructor.name}` : ""}</p>
                   </div>
                   <Badge variant="outline">{e.progress}%</Badge>
                 </div>
@@ -112,7 +132,7 @@ export default function StudentDashboardPage() {
                   <div key={a.id} className="flex items-center justify-between rounded-lg border p-3">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium">{a.title}</p>
-                      <p className="text-xs text-muted-foreground">{a.course.code} · due {new Date(a.dueDate).toLocaleDateString()}</p>
+                      <p className="text-xs text-muted-foreground">{a.course.code} Â· due {new Date(a.dueDate).toLocaleDateString()}</p>
                     </div>
                     <Badge variant={submitted ? "success" : "warning"}>{submitted ? "Submitted" : "Due"}</Badge>
                   </div>
@@ -133,7 +153,7 @@ export default function StudentDashboardPage() {
                     <Megaphone className="h-4 w-4 shrink-0 text-[#c1121f]" />
                     <p className="truncate text-sm font-medium">{a.title}</p>
                   </div>
-                  {a.course && <p className="text-xs text-muted-foreground">{a.course.title} · by {a.author.name}</p>}
+                  {a.course && <p className="text-xs text-muted-foreground">{a.course.title} Â· by {a.author.name}</p>}
                   {!a.course && <p className="text-xs text-muted-foreground">by {a.author.name}</p>}
                 </div>
               ))}
