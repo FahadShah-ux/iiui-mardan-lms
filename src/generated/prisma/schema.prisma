@@ -1,0 +1,217 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  INSTRUCTOR
+  STUDENT
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Grade {
+  id          String            @id @default(cuid())
+  name        String            @unique
+  order       Int               @default(0)
+  users       User[]
+  courses     Course[]
+  instructors InstructorGrade[]
+  createdAt   DateTime          @default(now())
+}
+
+model InstructorGrade {
+  id           String   @id @default(cuid())
+  instructorId String
+  instructor   User     @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  gradeId      String
+  grade        Grade    @relation(fields: [gradeId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+
+  @@unique([instructorId, gradeId])
+}
+
+model User {
+  id               String             @id @default(cuid())
+  name             String
+  email            String             @unique
+  passwordHash     String
+  role             Role
+  status           UserStatus         @default(ACTIVE)
+  avatar           String?
+  tokenVersion     Int                @default(0)
+  gradeId          String?
+  grade            Grade?             @relation(fields: [gradeId], references: [id], onDelete: SetNull)
+  section          String?
+  instructorGrades InstructorGrade[]
+  coursesTaught    Course[]           @relation("Instructor")
+  enrollments      Enrollment[]
+  announcements    Announcement[]     @relation("Author")
+  submissions      Submission[]
+  attendance       AttendanceRecord[]
+  notifications    Notification[]
+  createdAt        DateTime           @default(now())
+}
+
+model Course {
+  id            String             @id @default(cuid())
+  code          String             @unique
+  title         String
+  description   String
+  credits       Int                @default(3)
+  semester      String
+  color         String             @default("#990000")
+  instructorId  String?
+  instructor    User?              @relation("Instructor", fields: [instructorId], references: [id], onDelete: SetNull)
+  gradeId       String?
+  grade         Grade?             @relation(fields: [gradeId], references: [id], onDelete: SetNull)
+  modules       Module[]
+  lectures      Lecture[]
+  enrollments   Enrollment[]
+  assignments   Assignment[]
+  attendance    AttendanceRecord[]
+  announcements Announcement[]
+  timetable     TimetableSlot[]
+  createdAt     DateTime           @default(now())
+}
+
+model Enrollment {
+  id         String   @id @default(cuid())
+  studentId  String
+  student    User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId   String
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress   Float    @default(0)
+  enrolledAt DateTime @default(now())
+
+  @@unique([studentId, courseId])
+}
+
+model Module {
+  id        String    @id @default(cuid())
+  courseId  String
+  course    Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title     String
+  order     Int       @default(0)
+  lectures  Lecture[]
+  createdAt DateTime  @default(now())
+}
+
+enum LectureType {
+  VIDEO
+  PDF
+  LINK
+  FILE
+}
+
+model Lecture {
+  id         String      @id @default(cuid())
+  courseId   String
+  course     Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  moduleId   String?
+  module     Module?     @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  title      String
+  type       LectureType
+  contentUrl String
+  order      Int         @default(0)
+  createdAt  DateTime    @default(now())
+}
+
+enum AnnouncementScope {
+  GLOBAL
+  COURSE
+}
+
+model Announcement {
+  id        String            @id @default(cuid())
+  title     String
+  body      String
+  scope     AnnouncementScope @default(GLOBAL)
+  authorId  String
+  author    User              @relation("Author", fields: [authorId], references: [id], onDelete: Cascade)
+  courseId  String?
+  course    Course?           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  pinned    Boolean           @default(false)
+  createdAt DateTime          @default(now())
+}
+
+model Assignment {
+  id          String       @id @default(cuid())
+  courseId    String
+  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  dueDate     DateTime
+  maxMarks    Int          @default(100)
+  submissions Submission[]
+  createdAt   DateTime     @default(now())
+}
+
+enum SubmissionStatus {
+  SUBMITTED
+  GRADED
+}
+
+model Submission {
+  id           String           @id @default(cuid())
+  assignmentId String
+  assignment   Assignment       @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId    String
+  student      User             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  text         String?
+  fileUrl      String?
+  status       SubmissionStatus @default(SUBMITTED)
+  marks        Float?
+  feedback     String?
+  submittedAt  DateTime         @default(now())
+  gradedAt     DateTime?
+
+  @@unique([assignmentId, studentId])
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+model AttendanceRecord {
+  id        String           @id @default(cuid())
+  courseId  String
+  course    Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  studentId String
+  student   User             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  date      DateTime
+  status    AttendanceStatus @default(PRESENT)
+
+  @@unique([courseId, studentId, date])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model TimetableSlot {
+  id       String @id @default(cuid())
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  day      Int
+  start    String
+  end      String
+  room     String
+}
